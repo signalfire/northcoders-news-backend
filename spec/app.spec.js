@@ -18,6 +18,16 @@ describe('Northcoders News API', () => {
     after(() => {
         return mongoose.disconnect();
     })
+    describe('/api', () => {
+        it('GET homepage', () => {
+            return request
+                .get('/api')
+                .expect(200)
+                .then(res => {
+                    expect(res.text).to.contain('Northcoders News');
+                })
+        })
+    })
     describe('/api/topics', () => {
         it('GET should return an array of topics', () => {
             return request
@@ -37,6 +47,20 @@ describe('Northcoders News API', () => {
                 .then(res => {
                     expect(res.body).to.have.all.keys('articles');
                     expect(res.body.articles.length).to.equal(this.articleDocs.filter(article => article.belongs_to === 'mitch').length);
+                })
+        });
+        it ('POST should respond with a status code 201 and an object representing the added article', () => {
+            return request
+                .post('/api/topics/mitch/articles')
+                .send({
+                    title: 'I am a test article',
+                    body: 'I am a test body content for a new article in mitch topic',
+                    created_by: this.userDocs[0]._id,
+                })
+                .expect(201)
+                .then(res => {
+                    expect(res.body).to.have.all.keys('article');
+                    expect(res.body.article).to.have.all.keys(['_id', 'votes', 'title', 'body', 'created_by', 'belongs_to', 'created_at', '__v']);
                 })
         });
     })
@@ -62,6 +86,24 @@ describe('Northcoders News API', () => {
                     expect(res.body.article).to.have.all.keys(['__v','_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by']);
                 })
         });
+        it('PATCH should increment the votes of an article by 1', () => {
+            return request
+                .patch(`/api/articles/${this.articleDocs[0]._id}?vote=up`)
+                .expect(200)
+                .then(res => {
+                    expect(res.body).to.have.all.keys('article');
+                    expect(res.body.article.votes).to.equal(this.articleDocs[0].votes + 1);
+                });                
+        })
+        it('PATCH should decrease the votes of an article by 1', () => {
+            return request
+                .patch(`/api/articles/${this.articleDocs[0]._id}?vote=down`)
+                .expect(200)
+                .then(res => {
+                    expect(res.body).to.have.all.keys('article');
+                    expect(res.body.article.votes).to.equal(this.articleDocs[0].votes - 1);
+                });
+        })        
     });
     
     describe('/api/articles/:article_id/comments', () => {
@@ -85,6 +127,8 @@ describe('Northcoders News API', () => {
                 .then(res => {
                     expect(res.body).to.have.all.keys('comment');
                     expect(res.body.comment).to.have.all.keys(['_id', 'votes', 'body', 'created_by', 'belongs_to', 'created_at', '__v']);
+                    expect(res.body.comment.created_by).to.be.an('object');
+                    expect(res.body.comment.created_by).to.have.all.keys(['_id','username','name','avatar_url','__v']);
                 })
         });
     });
@@ -99,6 +143,36 @@ describe('Northcoders News API', () => {
                     expect(res.body.user).to.have.all.keys(['__v', '_id', 'username', 'name', 'avatar_url'])
                 })
         });
+    })
+
+    describe('/api/comments/:comment_id', () => {
+        it('DELETE should delete a single comment', () => {
+            return request
+                .delete(`/api/comments/${this.commentDocs[0]._id}`)
+                .expect(200)
+                .then(res => {
+                    expect(res.body).to.have.all.keys('status');
+                    expect(res.body.status).to.have.all.keys('n', 'ok');
+                })
+        });
+        it('PATCH should increment the votes of an comment by 1', () => {
+            return request
+                .patch(`/api/comments/${this.commentDocs[0]._id}?vote=up`)
+                .expect(200)
+                .then(res => {
+                    expect(res.body).to.have.all.keys('comment');
+                    expect(res.body.comment.votes).to.equal(this.commentDocs[0].votes + 1);
+                });                
+        })
+        it('PATCH should decrease the votes of an comment by 1', () => {
+            return request
+                .patch(`/api/comments/${this.commentDocs[0]._id}?vote=down`)
+                .expect(200)
+                .then(res => {
+                    expect(res.body).to.have.all.keys('comment');
+                    expect(res.body.comment.votes).to.equal(this.commentDocs[0].votes - 1);
+                });
+        })         
     })
 
 });

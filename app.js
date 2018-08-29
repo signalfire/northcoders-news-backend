@@ -17,10 +17,6 @@ mongoose.connect(DB_URL, {useNewUrlParser: true})
 
 app.use('/api', apiRouter);
 
-app.get('/', (req, res, next) => {
-    res.status(200).send('Home');
-})
-
 app.use((err, req, res, next) => {
     if (err.status) res.status(err.status).send(err.msg)
     else console.log(err);
