@@ -1,0 +1,82 @@
+<% include ../../partials/head %>
+
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h1 class="display-4">Northcoders News</h1>
+        <p class="lead">API methods for Northcoders news...</p>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Endpoint</th>
+                        <th scope="col">Method</th>
+                        <th scope="col">Description</th>
+                    </tr>
+                </thead>
+                <tbody>   
+                    <tr>
+                        <th scope="row">/api/topics</th>
+                        <td>GET</td>
+                        <td>Get all the topics</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">/api/topics/:topic_slug/articles</th>
+                        <td>GET</td>
+                        <td>Return all the articles for a certain topic e.g /api/topics/football/articles</td>
+                    </tr>                    
+                    <tr>
+                        <th scope="row">/api/topics/:topic_slug/articles</th>
+                        <td>POST</td>
+                        <td>Add a new article to a topic.<br>This route requires a JSON post body with title and body key value pairs<br><pre>{<br>    "title": "new article",<br>    "body": "This is my new article content",<br>    "created_by": "user_id goes here"<br>}</pre></td>
+                    </tr>   
+                    <tr>
+                        <th scope="row">/api/articles</th>
+                        <td>GET</td>
+                        <td>Returns all the articles</td>
+                    </tr>           
+                    <tr>
+                        <th scope="row">/api/articles/:article_id</th>
+                        <td>GET</td>
+                        <td>Get an individual article</td>
+                    </tr>                       
+                    <tr>
+                        <th scope="row">/api/articles/:article_id/comments</th>
+                        <td>GET</td>
+                        <td>Get all the comments for a individual article</td>
+                    </tr>   
+                    <tr>
+                        <th scope="row">/api/articles/:article_id/comments</th>
+                        <td>POST</td>
+                        <td>Add a new comment to an article.<br>This route requires a JSON body with body and created_by key value pairs.<br><pre>{<br>    "body": "This is my new comment",<br>    "created_by": "user_id goes here"<br>}</td>
+                    </tr>    
+                    <tr>
+                        <th scope="row">/api/articles/:article_id?vote=up|down</th>
+                        <td>PATCH</td>
+                        <td>Increment or Decrement the votes of an article by one</td>
+                    </tr>    
+                    <tr>
+                        <th scope="row">/api/comments/:comment_id?vote=up|down</th>
+                        <td>PATCH</td>
+                        <td>Increment or Decrement the votes of a comment by one</td>
+                    </tr> 
+                    <tr>
+                        <th scope="row">/api/comments/:comment_id</th>
+                        <td>DELETE</td>
+                        <td>Deletes a comment</td>
+                    </tr> 
+                    <tr>
+                        <th scope="row">/api/users/:username</th>
+                        <td>GET</td>
+                        <td>Returns a JSON object with the profile data for the specified user</td>
+                    </tr>                                        
+                </tbody>
+            </table>         
+        </div>
+    </div>
+</div>
+
+<% include ../../partials/foot %>

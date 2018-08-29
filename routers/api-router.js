@@ -6,8 +6,9 @@ const commentRouter = require('./comment-router');
 
 apiRouter.route('/')
     .get((req, res, next) => {
-        res.status(200).send('Northcoders News');
+        res.render('pages/api/index');
     });
+    
 apiRouter.use('/topics', topicRouter);
 apiRouter.use('/articles', articleRouter);
 apiRouter.use('/users', userRouter);

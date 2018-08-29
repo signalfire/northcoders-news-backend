@@ -10,12 +10,18 @@ const app = express();
 
 app.use(bodyParser.json());
 
+app.set('view engine', 'ejs');
+
 mongoose.connect(DB_URL, {useNewUrlParser: true})
     .then(() => {
         console.log(`Connected to Mongo via ${DB_URL}...`);
     });
 
 app.use('/api', apiRouter);
+
+app.use('/*', (req, res, next) => {
+    next({status: 404, msg: 'Not found'});
+});
 
 app.use((err, req, res, next) => {
     if (err.status) res.status(err.status).send(err.msg)

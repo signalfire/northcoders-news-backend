@@ -2,7 +2,7 @@ exports.databaseUrl = () => {
     const environments = {
         test: 'mongodb://localhost:27017/northcoders_news_test',
         development: 'mongodb://localhost:27017/northcoders_news_dev',
-        production: ''
+        production: process.env.MONGODB_URI
     }
     return environments[process.env.NODE_ENV];
 }
