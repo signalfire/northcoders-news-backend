@@ -7,6 +7,15 @@ exports.databaseUrl = () => {
     return environments[process.env.NODE_ENV];
 }
 
+exports.seedFilePath = () => {
+    const environments = {
+        test: './testData',
+        development: './devData',
+        production: './devData'
+    }
+    return environments[process.env.NODE_ENV];
+}
+
 exports.formatArticleData = (articlesData, topicRefs, userRefs) => {
     return articlesData.map(articleDatum => {
         const created_by = userRefs[articleDatum.created_by];
