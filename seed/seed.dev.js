@@ -3,7 +3,7 @@ const seedDB = require('./seed');
 const {databaseUrl} = require('../utils');
 const {articles, comments, topics, users} = require('./devData');
 
-const DB_URL = databaseUrl('development');
+const DB_URL = databaseUrl();
 
 mongoose.connect(DB_URL, {useNewUrlParser: true})
     .then(() => {

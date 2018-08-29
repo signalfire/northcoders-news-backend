@@ -1,12 +1,10 @@
-exports.databaseUrl = (env) => {
-    switch(env.toLowerCase()){
-        case 'test':
-            return 'mongodb://localhost:27017/northcoders_news_test'
-        case 'development':
-            return 'mongodb://localhost:27017/northcoders_news_dev'
-        default:
-            return '';x
+exports.databaseUrl = () => {
+    const environments = {
+        test: 'mongodb://localhost:27017/northcoders_news_test',
+        development: 'mongodb://localhost:27017/northcoders_news_dev',
+        production: ''
     }
+    return environments[process.env.NODE_ENV];
 }
 
 exports.formatArticleData = (articlesData, topicRefs, userRefs) => {
