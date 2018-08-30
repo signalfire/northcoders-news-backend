@@ -200,7 +200,6 @@ describe('Northcoders News API', () => {
                     expect(body.status).to.equal(404);
                     expect(body.msg).to.equal('Page Not Found');
                 })
-
         })
         it('PATCH should increment the votes of an article by 1', () => {
             return request
@@ -302,6 +301,100 @@ describe('Northcoders News API', () => {
                     expect(comment.created_by).to.have.all.keys(['_id','username','name','avatar_url','__v']);
                 })
         });
+
+        it('POST should respond with a status code 400 when attempting to add a comment with an invalid mongoid', () => {
+            return request
+                .post('/api/articles/something-really-geeky-here/comments')
+                .send({
+                    body: `I am a test comment for article ${articleDocs[0].title}`,
+                    created_by: userDocs[0]._id,
+                })
+                .expect(400)
+                .then(({body}) => {
+                    expect(body).to.be.an('object');
+                    expect(body).to.have.all.keys(['msg', 'status']);
+                    expect(body.status).to.equal(400);
+                    expect(body.msg).to.equal('Bad Request');
+                })
+        });
+
+        it ('POST should respond with a status code 400 as object posted has an invalid created_by mongo id for user', () => {
+            return request
+                .post(`/api/articles/${articleDocs[0]._id}/comments`)
+                .send({
+                    body: `I am a test comment for article ${articleDocs[0].title}`,
+                    created_by: 'mr-wibble',
+                })
+                .expect(400)
+                .then(({body}) => {
+                    expect(body).to.be.an('object');
+                    expect(body).to.have.all.keys(['msg', 'status']);
+                    expect(body.status).to.equal(400);
+                    expect(body.msg).to.equal('Bad Request');
+                })
+        });
+
+        it ('POST should respond with a status code 400 as object posted has an valid created_by mongo id but for another collection', () => {
+            return request
+                .post(`/api/articles/${articleDocs[0]._id}/comments`)
+                .send({
+                    body: `I am a test comment for article ${articleDocs[0].title}`,
+                    created_by: topicDocs[0]._id,
+                })
+                .expect(400)
+                .then(({body}) => {
+                    expect(body).to.be.an('object');
+                    expect(body).to.have.all.keys(['msg', 'status']);
+                    expect(body.status).to.equal(400);
+                    expect(body.msg).to.equal('Bad Request');
+                })
+        });
+
+        it('POST should respond with a status code 400 when attempting to add a comment with an valid mongoid but for another collection', () => {
+            return request
+                .post(`/api/articles/${topicDocs[0]._id}/comments`)
+                .send({
+                    body: `I am a test comment for article ${articleDocs[0].title}`,
+                    created_by: userDocs[0]._id,
+                })
+                .expect(400)
+                .then(({body}) => {
+                    expect(body).to.be.an('object');
+                    expect(body).to.have.all.keys(['msg', 'status']);
+                    expect(body.status).to.equal(400);
+                    expect(body.msg).to.equal('Bad Request');
+                })
+        });        
+
+        it('POST should respond with a status code 400 as object posted is missing a required body field', () => {
+            return request
+                .post(`/api/articles/${articleDocs[0]._id}/comments`)
+                .send({
+                    created_by: userDocs[0]._id,
+                })
+                .expect(400)
+                .then(({body}) => {
+                    expect(body).to.be.an('object');
+                    expect(body).to.have.all.keys(['msg', 'status']);
+                    expect(body.status).to.equal(400);
+                    expect(body.msg).to.equal('Bad Request');
+                })
+        });     
+
+        it('POST should respond with a status code 400 as object posted is missing a created_by field', () => {
+            return request
+                .post(`/api/articles/${articleDocs[0]._id}/comments`)
+                .send({
+                    body: `I am a test comment for article ${articleDocs[0].title}`,
+                })
+                .expect(400)
+                .then(({body}) => {
+                    expect(body).to.be.an('object');
+                    expect(body).to.have.all.keys(['msg', 'status']);
+                    expect(body.status).to.equal(400);
+                    expect(body.msg).to.equal('Bad Request');
+                })
+        });                
     });
 
     describe('/api/users/:username', () => {
@@ -317,6 +410,17 @@ describe('Northcoders News API', () => {
                     expect(user.username).to.equal(userDocs[0].username);
                 })
         });
+        it('GET should return a 404 when user is not found in collection', () => {
+            return request
+                .get(`/api/users/benny-hill`)
+                .expect(404)
+                .then(({body}) => {
+                    expect(body).to.be.an('object');
+                    expect(body).to.have.all.keys(['msg', 'status']);
+                    expect(body.status).to.equal(404);
+                    expect(body.msg).to.equal('Page Not Found');
+                })
+        });        
     })
 
     describe('/api/comments/:comment_id', () => {
@@ -351,7 +455,51 @@ describe('Northcoders News API', () => {
                     expect(comment).to.be.an('object');
                     expect(comment.votes).to.equal(commentDocs[0].votes - 1);
                 });
-        })         
+        })  
+        it('PATCH should return a 400 as comment mongoid is invalid', () => {
+            return request
+                .patch(`/api/comments/something-terrible-geeky?vote=up`)
+                .expect(400)
+                .then(({body}) => {
+                    expect(body).to.be.an('object');
+                    expect(body).to.have.all.keys(['msg', 'status']);
+                    expect(body.status).to.equal(400);
+                    expect(body.msg).to.equal('Bad Request');
+                });                
+        }) 
+        it('PATCH should return a 404 as comment mongoid is valid, but data with mongoid doesnt exist in collection', () => {
+            return request
+                .patch(`/api/comments/${topicDocs[0]._id}?vote=up`)
+                .expect(404)
+                .then(({body}) => {
+                    expect(body).to.be.an('object');
+                    expect(body).to.have.all.keys(['msg', 'status']);
+                    expect(body.status).to.equal(404);
+                    expect(body.msg).to.equal('Page Not Found');
+                });                
+        })      
+        it('PATCH should return a 400 as vote key is missing in query', () => {
+            return request
+                .patch(`/api/comments/${commentDocs[0]._id}`)
+                .expect(400)
+                .then(({body}) => {
+                    expect(body).to.be.an('object');
+                    expect(body).to.have.all.keys(['msg', 'status']);
+                    expect(body.status).to.equal(400);
+                    expect(body.msg).to.equal('Bad Request');
+                });                
+        })     
+        it('PATCH should return a 400 as vote key is in query but unexpected value', () => {
+            return request
+                .patch(`/api/comments/${commentDocs[0]._id}?vote=test`)
+                .expect(400)
+                .then(({body}) => {
+                    expect(body).to.be.an('object');
+                    expect(body).to.have.all.keys(['msg', 'status']);
+                    expect(body.status).to.equal(400);
+                    expect(body.msg).to.equal('Bad Request');
+                });                
+        })              
     })
 
 });
