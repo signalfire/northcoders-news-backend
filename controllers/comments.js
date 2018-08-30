@@ -3,7 +3,7 @@ const {Comment, Article, User} = require('../models');
 module.exports.getArticleComments = (req, res, next) => {
     Article.find({_id: req.params.article_id})
         .then(article => {
-            if (!article) next({msg: 'Bad Request', status: 400});
+            if (!article) return Promise.reject({msg: 'Bad Request', status: 400});
             return Comment.find({belongs_to: req.params.article_id})
                 .populate('belongs_to')
                 .populate('created_by');
@@ -21,11 +21,11 @@ module.exports.addArticleComment = (req, res, next) => {
     let belongs_to = req.params.article_id;
     Article.findOne({_id: belongs_to})
         .then(article => {
-            if (!article) next({msg: 'Bad Request', status: 400});
+            if (!article) return Promise.reject({msg: 'Bad Request', status: 400});
             return User.findOne({_id: req.body.created_by});
         })
         .then(user => {
-            if (!user) next({msg: 'Bad Request', status: 400});
+            if (!user) return Promise.reject({msg: 'Bad Request', status: 400});
             return Comment.create({...req.body, belongs_to});
         })
         .then(comment => {
