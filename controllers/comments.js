@@ -1,6 +1,6 @@
 const {Comment} = require('../models');
 
-exports.articleComments = (req, res, next) => {
+module.exports.articleComments = (req, res, next) => {
     return Comment.find({belongs_to: req.params.article_id})
         .then(comments => {
             res.status(200).send({comments})
@@ -8,7 +8,7 @@ exports.articleComments = (req, res, next) => {
         .catch(err => next(err));
 }
 
-exports.addArticleComment = (req, res, next) => {
+module.exports.addArticleComment = (req, res, next) => {
     let belongs_to = req.params.article_id;
     return new Comment({...req.body, belongs_to}).save()
         .then(comment => {
@@ -20,7 +20,7 @@ exports.addArticleComment = (req, res, next) => {
         .catch(err => next(err));
 }
 
-exports.deleteCommentById = (req, res, next) => {
+module.exports.deleteCommentById = (req, res, next) => {
     return Comment.deleteOne({_id: req.params.comment_id})
         .then(status => {
             res.status(200).send({status});
@@ -28,7 +28,7 @@ exports.deleteCommentById = (req, res, next) => {
         .catch(err => next(err));
 }
 
-exports.voteByCommentId = (req, res, next) => {
+module.exports.voteByCommentId = (req, res, next) => {
     const updateAction = {up: {$inc: {votes: 1}}, down: {$inc: {votes: -1}}};
     return Comment.findOneAndUpdate({_id: req.params.comment_id}, updateAction[req.query.vote], {new: true})
         .then(comment => {

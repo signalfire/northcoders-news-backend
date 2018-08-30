@@ -1,6 +1,6 @@
 const {Topic, Article} = require('../models');
 
-exports.topics = (req, res, next) => {
+module.exports.topics = (req, res, next) => {
     return Topic.find()
         .then(topics => {
            res.status(200).send({topics});
@@ -8,7 +8,7 @@ exports.topics = (req, res, next) => {
         .catch(err => next(err));
 }
 
-exports.articlesForTopic = (req, res, next) => {
+module.exports.articlesForTopic = (req, res, next) => {
     return Article.find({belongs_to: req.params.topic_slug})
         .then(articles => {
             res.status(200).send({articles})
