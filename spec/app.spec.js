@@ -209,8 +209,6 @@ describe('Northcoders News API', () => {
                     const {article} = body;
                     expect(body).to.have.all.keys('article');
                     expect(article.votes).to.equal(articleDocs[0].votes + 1);
-
-                    // May need to change function and instead of returning object, make another request and check the request
                 });                
         })        
         it('PATCH should decrease the votes of an article by 1', () => {
@@ -221,7 +219,6 @@ describe('Northcoders News API', () => {
                     const {article} = body;
                     expect(body).to.have.all.keys('article');
                     expect(article.votes).to.equal(articleDocs[0].votes - 1);
-                    // May need to change function and instead of returning object, make another request and check the request
                 });
         })
         it('PATCH should return a 400 as article mongoid is invalid', () => {
