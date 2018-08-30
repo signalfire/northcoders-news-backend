@@ -41,11 +41,18 @@ module.exports.addArticleComment = (req, res, next) => {
 }
 
 module.exports.deleteCommentById = (req, res, next) => {
-    Comment.deleteOne({_id: req.params.comment_id})
-        .then(status => {
-            res.status(200).send({status});
+    Comment.findOne({_id: req.params.comment_id})
+        .then(comment => {
+            if (!comment) return Promise.reject({msg: 'Page Not Found', status: 404});
+            return comment.remove();
         })
-        .catch(err => next(err));
+        .then(comment => {
+            res.status(200).send({comment});
+        })
+        .catch(err => {
+            if (err.name === 'CastError') next({msg: 'Bad Request', status: 400});
+            else next(err);           
+        })
 }
 
 module.exports.voteByCommentId = (req, res, next) => {

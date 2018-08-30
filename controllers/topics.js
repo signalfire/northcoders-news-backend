@@ -9,10 +9,16 @@ module.exports.getTopics = (req, res, next) => {
 }
 
 module.exports.getArticlesForTopic = (req, res, next) => {
-    Article.find({belongs_to: req.params.topic_slug})
-        .populate('created_by')
+    Topic.findOne({slug: req.params.topic_slug})
+        .then(topic => {
+            if (!topic) return Promise.reject({msg: 'Page Not Found', status: 404})
+            return Article.find({belongs_to: req.params.topic_slug}).populate('created_by')
+        })
         .then(articles => {
             res.status(200).send({articles})
         })
-        .catch(err => next(err));
+        .catch(err => {
+            if (err.name === 'CastError') next({msg: 'Bad Request', status: 400});
+            else next(err);             
+        });
 }

@@ -57,6 +57,17 @@ describe('Northcoders News API', () => {
                     expect(articles[0].title).to.equal(filteredDocs[0].title);
                 })
         });
+        it ('GET should respond with a status code 404 when passed a topic slug that does not exist', () => {
+            return request
+                .get('/api/topics/i-do-not-exist/articles')
+                .expect(404)
+                .then(({body}) => {
+                    expect(body).to.be.an('object');
+                    expect(body).to.have.all.keys(['msg', 'status']);
+                    expect(body.status).to.equal(404);
+                    expect(body.msg).to.equal('Page Not Found');                    
+                })
+        });  
         it ('POST should respond with a status code 201 and an object representing the added article', () => {
             return request
                 .post(`/api/topics/${topicDocs[0].slug}/articles`)
@@ -436,12 +447,35 @@ describe('Northcoders News API', () => {
             return request
                 .delete(`/api/comments/${commentDocs[0]._id}`)
                 .expect(200)
-                .then(res => {
-                    expect(res.body).to.have.all.keys('status');
-                    expect(res.body).to.be.an('object');
-                    expect(res.body.status).to.have.all.keys('n', 'ok');
+                .then(({body}) => {
+                    const {comment} = body;
+                    expect(body).to.have.all.keys('comment');
+                    expect(comment).to.be.an('object');
+                    expect(comment).to.have.all.keys(['_id', '__v', 'body', 'votes', 'created_at', 'belongs_to', 'created_by']);
                 })
         });
+        it('DELETE should return a 404 status when trying to delete a valid mongoid that does not exist in the collection', () => {
+            return request
+                .delete(`/api/comments/${topicDocs[0]._id}`)
+                .expect(404)
+                .then(({body}) => {
+                    expect(body).to.be.an('object');
+                    expect(body).to.have.all.keys(['msg', 'status']);
+                    expect(body.status).to.equal(404);
+                    expect(body.msg).to.equal('Page Not Found');
+                })
+        });  
+        it('DELETE should return a 400 status when trying to delete a invalid mongoid', () => {
+            return request
+                .delete('/api/comments/something-really-geeky-here')
+                .expect(400)
+                .then(({body}) => {
+                    expect(body).to.be.an('object');
+                    expect(body).to.have.all.keys(['msg', 'status']);
+                    expect(body.status).to.equal(400);
+                    expect(body.msg).to.equal('Bad Request');
+                })
+        });        
         it('PATCH should increment the votes of an comment by 1', () => {
             return request
                 .patch(`/api/comments/${commentDocs[0]._id}?vote=up`)
