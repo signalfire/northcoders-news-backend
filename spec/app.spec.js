@@ -186,7 +186,7 @@ describe('Northcoders News API', () => {
                     const {article} = body;
                     expect(body).to.have.all.keys('article');
                     expect(article).to.be.an('object');
-                    expect(article).to.have.all.keys(['__v','_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by']);
+                    expect(article).to.have.all.keys(['__v','_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count']);
                     expect(article.title).to.equal(articleDocs[0].title);
                 })
         });

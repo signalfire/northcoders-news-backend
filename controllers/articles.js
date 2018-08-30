@@ -1,23 +1,40 @@
-const {Article, Topic, User} = require('../models');
+const {Article, Topic, User, Comment} = require('../models');
+const mongoose = require('mongoose');
 
 module.exports.getArticles = (req, res, next) => {
-    Article.find().populate('created_by')
-        .then(articles => {
-            res.status(200).send({articles})
-        })
-        .catch(err => next(err));
+    Article.aggregate([
+        {$lookup: { from:"comments", let: {"id": "$_id"}, pipeline:[{$match:{$expr:{$eq:["$$id","$belongs_to"]}}},{ $count: "count" }],as:"comments"}},
+        {$addFields: {"comment_count": { $sum: "$comments.count" }}},
+        {$project:{"comments":false}}    
+    ])    
+    .then((results) => {
+        return Article.populate(results, {path: "created_by"});
+    })
+    .then(articles => {
+        res.status(200).send({articles})
+    })
+    .catch(err => next(err));
 }
 
 module.exports.getArticleById = (req, res, next) => {
-    Article.findById(req.params.article_id).populate('created_by')
-        .then(article => {
-            if (!article) return Promise.reject({msg: 'Page Not Found', status: 404});
-            res.status(200).send({article})
-        }) 
-        .catch(err => {
-            if (err.name === 'CastError') next({msg: 'Bad Request', status: 400})
-            else next(err);
-        });   
+    Article.aggregate([
+        {$match: {_id: mongoose.Types.ObjectId(req.params.article_id)}},
+        {$lookup: { from:"comments", let: {"id": "$_id"}, pipeline:[{$match:{$expr:{$eq:["$$id","$belongs_to"]}}},{ $count: "count" }],as:"comments"}},
+        {$addFields: {"comment_count": { $sum: "$comments.count" }}},
+        {$project:{"comments":false}}    
+    ])
+    .then((result) => {
+        if (result.length === 0) return Promise.reject({msg: 'Page Not Found', status: 404});
+        const [article] = result;
+        return Article.populate(article, {path: "created_by"});
+    })
+    .then(article => {
+        res.status(200).send({article})
+    })
+    .catch(err => {
+         if (err.name === 'CastError') next({msg: 'Bad Request', status: 400})
+        else next(err);
+    });   
 }
 
 module.exports.voteByArticleId = (req, res, next) => {
