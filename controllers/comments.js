@@ -10,7 +10,7 @@ module.exports.getArticleComments = (req, res, next) => {
 
 module.exports.addArticleComment = (req, res, next) => {
     let belongs_to = req.params.article_id;
-    new Comment({...req.body, belongs_to}).save()
+    Comment.create({...req.body, belongs_to})
         .then(comment => {
             return comment.populate('created_by').execPopulate();
         })
