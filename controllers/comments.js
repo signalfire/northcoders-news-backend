@@ -1,11 +1,20 @@
 const {Comment, Article, User} = require('../models');
 
 module.exports.getArticleComments = (req, res, next) => {
-    Comment.find({belongs_to: req.params.article_id})
+    Article.find({_id: req.params.article_id})
+        .then(article => {
+            if (!article) next({msg: 'Bad Request', status: 400});
+            return Comment.find({belongs_to: req.params.article_id})
+                .populate('belongs_to')
+                .populate('created_by');
+        })
         .then(comments => {
             res.status(200).send({comments})
         })
-        .catch(err => next(err));
+        .catch(err => {
+            if (err.name === 'CastError') next({msg: 'Bad Request', status: 400});
+            else next(err);            
+        });
 }
 
 module.exports.addArticleComment = (req, res, next) => {

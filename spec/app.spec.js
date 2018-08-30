@@ -281,6 +281,17 @@ describe('Northcoders News API', () => {
                     expect(comments[0].body).to.equal(filteredDocs[0].body);
                 })
         });
+        it('GET should return 400 when requesting comments for an article by mongoid that is invalid', () => {
+            return request
+                .get('/api/articles/something-terribly-geeky/comments')
+                .expect(400)
+                .then(({body}) => {
+                    expect(body).to.be.an('object');
+                    expect(body).to.have.all.keys(['msg', 'status']);
+                    expect(body.status).to.equal(400);
+                    expect(body.msg).to.equal('Bad Request');
+                })
+        });        
         it('POST should create a new comment for a single article', () => {
             return request
                 .post(`/api/articles/${articleDocs[0]._id}/comments`)

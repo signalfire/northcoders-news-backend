@@ -1,13 +1,15 @@
 const {Article, Topic, User} = require('../models');
 
 module.exports.getArticles = (req, res, next) => {
-    Article.find()
-        .then(articles => res.status(200).send({articles}))
+    Article.find().populate('created_by')
+        .then(articles => {
+            res.status(200).send({articles})
+        })
         .catch(err => next(err));
 }
 
 module.exports.getArticleById = (req, res, next) => {
-    Article.findById(req.params.article_id)
+    Article.findById(req.params.article_id).populate('created_by')
         .then(article => {
             if (!article) return Promise.reject({msg: 'Page Not Found', status: 404});
             res.status(200).send({article})

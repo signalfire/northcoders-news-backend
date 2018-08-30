@@ -10,6 +10,7 @@ module.exports.getTopics = (req, res, next) => {
 
 module.exports.getArticlesForTopic = (req, res, next) => {
     Article.find({belongs_to: req.params.topic_slug})
+        .populate('created_by')
         .then(articles => {
             res.status(200).send({articles})
         })
