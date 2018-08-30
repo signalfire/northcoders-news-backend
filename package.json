@@ -9,7 +9,7 @@
     "test": "NODE_ENV=test mocha spec --exit",
     "seed:test": "NODE_ENV=test node seed/seed.db.js",
     "seed:dev": "NODE_ENV=development node seed/seed.db.js",
-    "seed:live": "NODE_ENV=production node seed/seed.db.js"
+    "seed:production": "NODE_ENV=production node seed/seed.db.js"
   },
   "author": "",
   "license": "ISC",

@@ -1,7 +1,7 @@
 const {User} = require('../models');
 
-module.exports.userByUsername = (req, res, next) => {
-    return User.findOne({username: req.params.username})
+module.exports.getUserByUsername = (req, res, next) => {
+    User.findOne({username: req.params.username})
         .then(user => {
            res.status(200).send({user});
         })

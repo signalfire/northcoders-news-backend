@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const apiRouter = require('./routers/api-router');
 const bodyParser = require('body-parser');
-const {databaseUrl} = require('./utils');
+const {DB_URL} = require('./config');
 
 const app = express();
 
@@ -10,24 +10,21 @@ app.use(bodyParser.json());
 
 app.set('view engine', 'ejs');
 
-mongoose.connect(databaseUrl(), {useNewUrlParser: true})
+mongoose.connect(DB_URL, {useNewUrlParser: true})
     .then(() => {
-        console.log(`Connected to Mongo via ${databaseUrl()}...`);
+        console.log(`Connected to Mongo via ${DB_URL}...`);
     });
 
 app.use('/api', apiRouter);
 
 app.use('/*', (req, res, next) => {
-    next({status: 404, msg: 'Not found'});
+    next({msg: 'Page not found', status: 404});
 });
 
-app.use((err, req, res, next) => {
-    if (err.status) res.status(err.status).send(err.msg)
-    else {
-        console.log(err);
-        res.status(500).send('An error has occurred...');
-    }
-  });
+app.use(({msg, status}, req, res, next) => {
+    if (status) res.status(status).send({status, msg});
+    else res.status(500).send({msg:'Internal server error', status: 500});
+});
   
 
 module.exports = app;

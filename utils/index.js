@@ -1,21 +1,3 @@
-module.exports.databaseUrl = () => {
-    const environments = {
-        test: 'mongodb://localhost:27017/northcoders_news_test',
-        development: 'mongodb://localhost:27017/northcoders_news_dev',
-        production: process.env.MONGODB_URI
-    }
-    return environments[process.env.NODE_ENV];
-}
-
-module.exports.seedFilePath = () => {
-    const environments = {
-        test: './testData',
-        development: './devData',
-        production: './devData'
-    }
-    return environments[process.env.NODE_ENV];
-}
-
 module.exports.formatArticleData = (articlesData, topicRefs, userRefs) => {
     return articlesData.map(articleDatum => {
         const created_by = userRefs[articleDatum.created_by];

@@ -1,16 +1,16 @@
 const articleRouter = require('express').Router();
-const {articles, articleById, voteByArticleId} = require('../controllers/articles');
-const {articleComments, addArticleComment} = require('../controllers/comments');
+const {getArticles, getArticleById, voteByArticleId} = require('../controllers/articles');
+const {getArticleComments, addArticleComment} = require('../controllers/comments');
 
 articleRouter.route('/')
-    .get(articles);
+    .get(getArticles);
 
 articleRouter.route('/:article_id')
-    .get(articleById)
+    .get(getArticleById)
     .patch(voteByArticleId);
 
 articleRouter.route('/:article_id/comments')
-    .get(articleComments)
+    .get(getArticleComments)
     .post(addArticleComment);
 
 
