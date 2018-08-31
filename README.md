@@ -50,12 +50,12 @@ const config = {
 
 module.exports = config[ENV];
 ```
-4. Update the <values> above with your own values
+4. Update the *<values>* above with your own values
 4. You will need to seed your local mongo database. To do this run the command *npm run seed:dev*
 5. Once seeded run the application using the command *npm run dev*
 
-To check that you have data seeded hit the end point at http://*<url>*/api/articles where *<url>* could be localhost,
-127.0.0.1 etc...You should see a json response containing seeded articles.
+To check that you have data seeded hit the end point at http://*<url>*:*<port>*/api/articles where *<url>* could be localhost,
+127.0.0.1 and *<port>* equals 9090 etc...etc...You should see a json response containing seeded articles.
 
 ## Running the tests
 
