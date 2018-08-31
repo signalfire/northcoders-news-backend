@@ -12,7 +12,15 @@ module.exports.getArticlesForTopic = (req, res, next) => {
     Topic.findOne({slug: req.params.topic_slug})
         .then(topic => {
             if (!topic) return Promise.reject({msg: 'Page Not Found', status: 404})
-            return Article.find({belongs_to: req.params.topic_slug}).populate('created_by')
+            return Article.aggregate([
+                {$match: {belongs_to: topic.slug}},
+                {$lookup: { from:"comments", let: {"id": "$_id"}, pipeline:[{$match:{$expr:{$eq:["$$id","$belongs_to"]}}},{ $count: "count" }],as:"comments"}},
+                {$addFields: {"comment_count": { $sum: "$comments.count" }}},
+                {$project:{"comments":false}}    
+            ])            
+        })
+        .then(articles => {
+            return Article.populate(articles, {path: "created_by"});
         })
         .then(articles => {
             res.status(200).send({articles})
