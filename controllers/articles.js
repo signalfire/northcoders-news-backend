@@ -17,6 +17,7 @@ module.exports.getArticles = (req, res, next) => {
 }
 
 module.exports.getArticleById = (req, res, next) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.article_id)) next({msg:'Bad Request', status:400});
     Article.aggregate([
         {$match: {_id: mongoose.Types.ObjectId(req.params.article_id)}},
         {$lookup: { from:"comments", let: {"id": "$_id"}, pipeline:[{$match:{$expr:{$eq:["$$id","$belongs_to"]}}},{ $count: "count" }],as:"comments"}},
@@ -32,8 +33,7 @@ module.exports.getArticleById = (req, res, next) => {
         res.status(200).send({article})
     })
     .catch(err => {
-         if (err.name === 'CastError') next({msg: 'Bad Request', status: 400})
-        else next(err);
+        next(err)
     });   
 }
 

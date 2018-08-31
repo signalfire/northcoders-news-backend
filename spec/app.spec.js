@@ -169,10 +169,13 @@ describe('Northcoders News API', () => {
                 .expect(200)
                 .then(({body}) => {
                     const {articles} = body;
+                    const filteredDocs = userDocs.filter(user => user._id === articleDocs[0].created_by);
                     expect(body).to.have.all.keys('articles');
                     expect(articles).to.be.an('array');
                     expect(articles.length).to.equal(articleDocs.length);
                     expect(articles[0].title).to.equal(articleDocs[0].title);
+                    expect(articles[0].created_by).to.be.an('object');
+                    expect(articles[0].created_by.username).to.equal(filteredDocs[0].username);
                 });
         });
     });
@@ -184,10 +187,14 @@ describe('Northcoders News API', () => {
                 .expect(200)
                 .then(({body}) => {
                     const {article} = body;
+                    const filteredDocs = userDocs.filter(user => user._id === articleDocs[0].created_by);
                     expect(body).to.have.all.keys('article');
                     expect(article).to.be.an('object');
                     expect(article).to.have.all.keys(['__v','_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count']);
                     expect(article.title).to.equal(articleDocs[0].title);
+                    expect(article.created_by).to.be.an('object');
+                    expect(article.created_by.username).to.equal(filteredDocs[0].username);
+
                 })
         });
         it('GET should return a 400 status when the mongoid used is invalid', () =>{
@@ -285,11 +292,17 @@ describe('Northcoders News API', () => {
                 .expect(200)
                 .then(({body}) => {
                     const {comments} = body;
-                    const filteredDocs = commentDocs.filter(comment => comment.belongs_to === articleDocs[0]._id);
+                    const filteredComments = commentDocs.filter(comment => comment.belongs_to === articleDocs[0]._id);
+                    const filteredUsers = userDocs.filter(user => user._id === filteredComments[0].created_by);
                     expect(body).to.have.all.keys('comments');
                     expect(comments).to.be.an('array');
-                    expect(comments.length).to.equal(filteredDocs.length);
-                    expect(comments[0].body).to.equal(filteredDocs[0].body);
+                    expect(comments.length).to.equal(filteredComments.length);
+                    expect(comments[0]).to.have.all.keys(['_id','__v', 'votes', 'body', 'belongs_to', 'created_by', 'created_at']);
+                    expect(comments[0].body).to.equal(filteredComments[0].body);
+                    expect(comments[0].created_by).to.be.an('object');
+                    expect(comments[0].created_by._id).to.equal(String(filteredUsers[0]._id));
+                    expect(comments[0].belongs_to).to.be.an('object');
+                    expect(comments[0].belongs_to._id).to.equal(String(articleDocs[0]._id));
                 })
         });
         it('GET should return 400 when requesting comments for an article by mongoid that is invalid', () => {
@@ -318,6 +331,9 @@ describe('Northcoders News API', () => {
                     expect(comment).to.have.all.keys(['_id', 'votes', 'body', 'created_by', 'belongs_to', 'created_at', '__v']);
                     expect(comment.created_by).to.be.an('object');
                     expect(comment.created_by).to.have.all.keys(['_id','username','name','avatar_url','__v']);
+                    expect(comment.created_by._id).to.equal(String(userDocs[0]._id));
+                    expect(comment.belongs_to).to.be.an('object');
+                    expect(comment.belongs_to).to.have.all.keys(['__v','_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by']);
                 })
         });
 

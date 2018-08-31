@@ -29,7 +29,7 @@ module.exports.addArticleComment = (req, res, next) => {
             return Comment.create({...req.body, belongs_to});
         })
         .then(comment => {
-            return comment.populate('created_by').execPopulate();
+            return Comment.populate(comment, {path:'created_by belongs_to'});
         })
         .then(comment => {
             res.status(201).send({comment});
