@@ -57,7 +57,7 @@ module.exports.deleteCommentById = (req, res, next) => {
 
 module.exports.voteByCommentId = (req, res, next) => {
     const updateAction = {up: {$inc: {votes: 1}}, down: {$inc: {votes: -1}}, undefined: null};
-    if (!updateAction[req.query.vote]) next({msg: 'Bad Request', status: 400});
+    if (!updateAction[req.query.vote]) return next({msg: 'Bad Request', status: 400});
     Comment.findOneAndUpdate({_id: req.params.comment_id}, updateAction[req.query.vote], {new: true})
         .then(comment => {
             if (!comment) return Promise.reject({msg: 'Page Not Found', status: 404});

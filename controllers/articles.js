@@ -17,7 +17,7 @@ module.exports.getArticles = (req, res, next) => {
 }
 
 module.exports.getArticleById = (req, res, next) => {
-    if (!mongoose.Types.ObjectId.isValid(req.params.article_id)) next({msg:'Bad Request', status:400});
+    if (!mongoose.Types.ObjectId.isValid(req.params.article_id)) return next({msg:'Bad Request', status:400});
     Article.aggregate([
         {$match: {_id: mongoose.Types.ObjectId(req.params.article_id)}},
         {$lookup: { from:"comments", let: {"id": "$_id"}, pipeline:[{$match:{$expr:{$eq:["$$id","$belongs_to"]}}},{ $count: "count" }],as:"comments"}},
@@ -39,7 +39,7 @@ module.exports.getArticleById = (req, res, next) => {
 
 module.exports.voteByArticleId = (req, res, next) => {
     const updateAction = {up: {$inc: {votes: 1}}, down: {$inc: {votes: -1}}, undefined: null};
-    if (!updateAction[req.query.vote]) next({msg: 'Bad Request', status: 400});
+    if (!updateAction[req.query.vote]) return next({msg: 'Bad Request', status: 400});
     Article.findOneAndUpdate({_id: req.params.article_id}, updateAction[req.query.vote], {new: true})
         .then(article => {
             if (!article) return Promise.reject({msg: 'Page Not Found', status: 404});
