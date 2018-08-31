@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const apiRouter = require('./routers/api-router');
 const bodyParser = require('body-parser');
-const {DB_URL} = require('./config');
+const {DB_URL = require('./config').DB_URL} = process.env;
 
 const app = express();
 

@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const seedDB = require('./seed');
-const {DB_URL, SEED_PATH} = require('../config');
+const {DB_URL = require('../config').DB_URL} = process.env;
+const {SEED_PATH = require('../config').SEED_PATH} = process.env;
+
 const {articles, comments, topics, users} = require(SEED_PATH);
 
 mongoose.connect(DB_URL, {useNewUrlParser: true})
