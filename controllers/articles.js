@@ -59,6 +59,7 @@ module.exports.addArticle = (req, res, next) => {
             return Topic.findOne({slug: belongs_to});
         })
         .then(topic => {
+            // TODO - Need to add something to add comment_count on the article, but it eludes me atm...
             if (!topic) return Promise.reject({msg: 'Bad Request', status: 400});
             return Article.create({...req.body, belongs_to});
         })

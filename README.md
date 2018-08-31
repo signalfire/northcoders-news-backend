@@ -39,7 +39,7 @@ const config = {
         SEED_PATH: './devData',
 	},
 	test: {
-        DB_URL: '<test development database in mongo>',
+        DB_URL: '<local test database in mongo>',
         SEED_PATH: './testData',
     },
     production: {
