@@ -82,6 +82,8 @@ describe('Northcoders News API', () => {
                     expect(body).to.have.all.keys('article');
                     expect(article).to.be.an('object');
                     expect(article).to.have.all.keys(['_id', 'votes', 'title', 'body', 'created_by', 'belongs_to', 'created_at', '__v']);
+                    expect(article.created_by).to.equal(`${userDocs[0]._id}`);
+                    expect(article.belongs_to).to.equal(topicDocs[0].slug);
                 })
         });
         it ('POST should respond with a status code 400 as object posted is missing a required title field', () => {
@@ -191,7 +193,7 @@ describe('Northcoders News API', () => {
                     expect(body).to.have.all.keys('article');
                     expect(article).to.be.an('object');
                     expect(article).to.have.all.keys(['__v','_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count']);
-                    expect(article.title).to.equal(articleDocs[0].title);
+                    expect(article._id).to.equal(`${articleDocs[0]._id}`);
                     expect(article.created_by).to.be.an('object');
                     expect(article.created_by.username).to.equal(filteredDocs[0].username);
 
@@ -300,9 +302,7 @@ describe('Northcoders News API', () => {
                     expect(comments[0]).to.have.all.keys(['_id','__v', 'votes', 'body', 'belongs_to', 'created_by', 'created_at']);
                     expect(comments[0].body).to.equal(filteredComments[0].body);
                     expect(comments[0].created_by).to.be.an('object');
-                    expect(comments[0].created_by._id).to.equal(String(filteredUsers[0]._id));
-                    expect(comments[0].belongs_to).to.be.an('object');
-                    expect(comments[0].belongs_to._id).to.equal(String(articleDocs[0]._id));
+                    expect(comments[0].created_by._id).to.equal(`${filteredUsers[0]._id}`);
                 })
         });
         it('GET should return 400 when requesting comments for an article by mongoid that is invalid', () => {
@@ -331,7 +331,7 @@ describe('Northcoders News API', () => {
                     expect(comment).to.have.all.keys(['_id', 'votes', 'body', 'created_by', 'belongs_to', 'created_at', '__v']);
                     expect(comment.created_by).to.be.an('object');
                     expect(comment.created_by).to.have.all.keys(['_id','username','name','avatar_url','__v']);
-                    expect(comment.created_by._id).to.equal(String(userDocs[0]._id));
+                    expect(comment.created_by._id).to.equal(`${userDocs[0]._id}`);
                     expect(comment.belongs_to).to.be.an('object');
                     expect(comment.belongs_to).to.have.all.keys(['__v','_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by']);
                 })

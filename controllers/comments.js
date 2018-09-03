@@ -5,7 +5,6 @@ module.exports.getArticleComments = (req, res, next) => {
         .then(article => {
             if (!article) return Promise.reject({msg: 'Bad Request', status: 400});
             return Comment.find({belongs_to: req.params.article_id})
-                .populate('belongs_to')
                 .populate('created_by');
         })
         .then(comments => {
@@ -18,7 +17,7 @@ module.exports.getArticleComments = (req, res, next) => {
 }
 
 module.exports.addArticleComment = (req, res, next) => {
-    let belongs_to = req.params.article_id;
+    const belongs_to = req.params.article_id;
     Article.findOne({_id: belongs_to})
         .then(article => {
             if (!article) return Promise.reject({msg: 'Bad Request', status: 400});
