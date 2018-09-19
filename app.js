@@ -10,6 +10,12 @@ app.use(bodyParser.json());
 
 app.set('view engine', 'ejs');
 
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
 mongoose.connect(DB_URL, {useNewUrlParser: true})
     .then(() => {
         console.log(`Connected to Mongo via ${DB_URL}...`);
