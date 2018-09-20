@@ -43,8 +43,11 @@ module.exports.voteByArticleId = (req, res, next) => {
     Article.findOneAndUpdate({_id: req.params.article_id}, updateAction[req.query.vote], {new: true})
         .then(article => {
             if (!article) return Promise.reject({msg: 'Page Not Found', status: 404});
-            res.status(200).send({article});
+            return Article.populate(article, {path: "created_by"});
         })  
+        .then(article => {
+            res.status(200).send({article});
+        })
         .catch(err => {
             if (err.name === 'CastError') next({msg: 'Bad Request', status: 400});
             else next(err);
