@@ -64,6 +64,9 @@ module.exports.addArticle = (req, res, next) => {
             return Article.create({...req.body, belongs_to});
         })
         .then(article => {
+            return Article.populate(article, {path: "created_by"});
+        })
+        .then(article => {
             res.status(201).send({article})
         })
         .catch(err => {
