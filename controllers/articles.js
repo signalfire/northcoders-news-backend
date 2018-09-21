@@ -43,9 +43,14 @@ module.exports.voteByArticleId = (req, res, next) => {
     Article.findOneAndUpdate({_id: req.params.article_id}, updateAction[req.query.vote], {new: true})
         .then(article => {
             if (!article) return Promise.reject({msg: 'Page Not Found', status: 404});
-            return Article.populate(article, {path: "created_by"});
+            return Promise.all([
+                Comment.countDocuments({belongs_to: req.params.article_id}),
+                Article.populate(article, {path: "created_by"})
+            ]);
         })  
-        .then(article => {
+        .then(([count, article]) => {
+            article = article.toObject();
+            article.comment_count = count;
             res.status(200).send({article});
         })
         .catch(err => {
