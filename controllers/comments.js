@@ -60,8 +60,11 @@ module.exports.voteByCommentId = (req, res, next) => {
     Comment.findOneAndUpdate({_id: req.params.comment_id}, updateAction[req.query.vote], {new: true})
         .then(comment => {
             if (!comment) return Promise.reject({msg: 'Page Not Found', status: 404});
-            res.status(200).send({comment});
+            return Comment.populate(comment, {path:'created_by'});
         })  
+        .then(comment => {
+            res.status(200).send({comment});
+        })        
         .catch(err => {
             if (err.name === 'CastError') next({msg: 'Bad Request', status: 400});
             else next(err);

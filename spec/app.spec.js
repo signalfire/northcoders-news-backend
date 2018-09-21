@@ -501,6 +501,9 @@ describe('Northcoders News API', () => {
                     const {comment} = body;
                     expect(body).to.have.all.keys('comment');
                     expect(comment).to.be.an('object');
+                    expect(comment).to.have.all.keys(['_id', 'body', 'belongs_to', 'created_by', 'created_at', 'votes', '__v']);
+                    expect(comment.created_by).to.be.an('object');
+                    expect(comment.created_by).to.have.all.keys(['_id', 'username', 'name', 'avatar_url', '__v']);
                     expect(comment.votes).to.equal(commentDocs[0].votes + 1);
                 });                
         })
@@ -512,6 +515,9 @@ describe('Northcoders News API', () => {
                     const {comment} = body;
                     expect(body).to.have.all.keys('comment');
                     expect(comment).to.be.an('object');
+                    expect(comment).to.have.all.keys(['_id', 'body', 'belongs_to', 'created_by', 'created_at', 'votes', '__v']);
+                    expect(comment.created_by).to.be.an('object');
+                    expect(comment.created_by).to.have.all.keys(['_id', 'username', 'name', 'avatar_url', '__v']);
                     expect(comment.votes).to.equal(commentDocs[0].votes - 1);
                 });
         })  
