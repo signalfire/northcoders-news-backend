@@ -75,14 +75,15 @@ describe('Northcoders News API', () => {
                     title: 'I am a test article',
                     body: 'I am a test body content for a new article in mitch topic',
                     created_by: userDocs[0]._id,
-                })
+                })    
                 .expect(201)
                 .then(({body}) => {
                     const {article} = body;
                     expect(body).to.have.all.keys('article');
                     expect(article).to.be.an('object');
-                    expect(article).to.have.all.keys(['_id', 'votes', 'title', 'body', 'created_by', 'belongs_to', 'created_at', '__v']);
-                    expect(article.created_by).to.equal(`${userDocs[0]._id}`);
+                    expect(article).to.have.all.keys(['_id', 'votes', 'title', 'body', 'created_by', 'belongs_to', 'created_at', 'comment_count', '__v']);
+                    expect(article.created_by).to.be.an('object');
+                    expect(article.created_by).to.have.all.keys(['_id','username','name','avatar_url','__v'])
                     expect(article.belongs_to).to.equal(topicDocs[0].slug);
                 })
         });

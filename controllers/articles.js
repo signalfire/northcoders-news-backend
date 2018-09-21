@@ -69,7 +69,8 @@ module.exports.addArticle = (req, res, next) => {
         .then(article => {
             return Article.populate(article, {path: "created_by"});
         })
-        .lean(article => {
+        .then(article => {
+            article = article.toObject();
             article.comment_count = 0;
             res.status(201).send({article})
         })
