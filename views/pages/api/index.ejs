@@ -36,7 +36,7 @@
                     <tr>
                         <th scope="row">/api/articles</th>
                         <td>GET</td>
-                        <td>Returns all the articles<br>To paginate pass in the querystring values page and pageSize e.g page=1&pageSize=10<br/>To sort pass in the querystring values sort and direction e.g. sort=created_at&direction=1. Direction can be 1 (ascending) or -1 descending</td>
+                        <td>Returns all the articles<br>To search pass in the querystring parameter search e.g ?search=shadow<br>To paginate pass in the querystring values page and pageSize e.g page=1&pageSize=10<br/>To sort pass in the querystring values sort and direction e.g. sort=created_at&direction=1. Direction can be 1 (ascending) or -1 descending</td>
                     </tr>           
                     <tr>
                         <th scope="row">/api/articles/:article_id</th>
@@ -72,7 +72,12 @@
                         <th scope="row">/api/users/:username</th>
                         <td>GET</td>
                         <td>Returns a JSON object with the profile data for the specified user</td>
-                    </tr>                                        
+                    </tr> 
+                    <tr>
+                        <th scope="row">/api/users/:username/articles</th>
+                        <td>GET</td>
+                        <td>Returns all the articles created by the specified user<br>To paginate pass in the querystring values page and pageSize e.g page=1&pageSize=10<br/>To sort pass in the querystring values sort and direction e.g. sort=created_at&direction=1. Direction can be 1 (ascending) or -1 descending</td>
+                    </tr>                                       
                 </tbody>
             </table>         
         </div>

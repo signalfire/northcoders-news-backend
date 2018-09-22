@@ -230,7 +230,7 @@ describe('Northcoders News API', () => {
                     expect(count).to.equal(articleDocs.length);
                     expect(articles).to.be.an('array');
                     expect(articles.length).to.equal(articleDocs.length);
-                    expect(articles[0].title).to.equal(articleDocs[0].title);
+                    expect(articles[0]._id).to.equal(`${articleDocs[0]._id}`);
                     expect(articles[0].created_by).to.be.an('object');
                     expect(articles[0].created_by.username).to.equal(filteredDocs[0].username);
                 });
@@ -567,6 +567,22 @@ describe('Northcoders News API', () => {
                 })
         });        
     })
+    describe('/api/users/:username/articles', () => {
+        it('GET should return articles for a username', () => {
+            return request
+                .get(`/api/users/${userDocs[0].username}/articles`)
+                .expect(200)
+                .then(({body}) => {
+                    const {articles, count} = body;
+                    const filteredDocs = articleDocs.filter(article => article.created_by === userDocs[0]._id);
+                    expect(body).to.have.all.keys(['articles', 'count']);
+                    expect(count).to.equal(filteredDocs.length);
+                    expect(articles.length).to.equal(filteredDocs.length);
+                    expect(articles[0]._id).to.equal(`${filteredDocs[0]._id}`);
+
+                });
+        })
+    });
 
     describe('/api/comments/:comment_id', () => {
         it('DELETE should delete a single comment', () => {
@@ -673,7 +689,6 @@ describe('Northcoders News API', () => {
                     expect(body.status).to.equal(400);
                     expect(body.msg).to.equal('Bad Request');
                 });                
-        })              
-    })
-
+        });            
+    });
 });
