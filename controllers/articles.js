@@ -26,7 +26,7 @@ module.exports.getArticles = (req, res, next) => {
         .then(([count, articles]) => {
             res.status(200).send({count, articles})
         })
-        .catch(err => console.log(err));//next(err));
+        .catch(err => next(err));
 }
 
 module.exports.getArticleById = (req, res, next) => {
