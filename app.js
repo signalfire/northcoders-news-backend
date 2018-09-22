@@ -17,7 +17,7 @@ app.use((req, res, next) => {
     next();
 });
 
-mongoose.connect(DB_URL, {useNewUrlParser: true,useCreateIndex: true})
+mongoose.connect(DB_URL, {useNewUrlParser: true})
     .then(() => {
         console.log(`Connected to Mongo via ${DB_URL}...`);
     });
