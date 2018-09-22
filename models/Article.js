@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const ArticleSchema = new Schema({
   title: {
     type: String,
-    required: true
+    required: true,
   },
   body: {
     type: String,
@@ -29,5 +29,7 @@ const ArticleSchema = new Schema({
     required: true
   }
 });
+
+ArticleSchema.index({'$**': 'text'});
 
 module.exports = mongoose.model('articles', ArticleSchema);

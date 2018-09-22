@@ -26,7 +26,7 @@
                     <tr>
                         <th scope="row">/api/topics/:topic_slug/articles</th>
                         <td>GET</td>
-                        <td>Return all the articles for a certain topic e.g /api/topics/football/articles</td>
+                        <td>Return all the articles for a certain topic e.g /api/topics/football/articles<br>To paginate pass in the querystring values page and pageSize e.g page=1&pageSize=10<br/>To sort pass in the querystring values sort and direction e.g. sort=created_at&direction=1. Direction can be 1 (ascending) or -1 descending</td>
                     </tr>                    
                     <tr>
                         <th scope="row">/api/topics/:topic_slug/articles</th>
@@ -36,7 +36,7 @@
                     <tr>
                         <th scope="row">/api/articles</th>
                         <td>GET</td>
-                        <td>Returns all the articles</td>
+                        <td>Returns all the articles<br>To paginate pass in the querystring values page and pageSize e.g page=1&pageSize=10<br/>To sort pass in the querystring values sort and direction e.g. sort=created_at&direction=1. Direction can be 1 (ascending) or -1 descending</td>
                     </tr>           
                     <tr>
                         <th scope="row">/api/articles/:article_id</th>

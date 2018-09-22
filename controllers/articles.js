@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 
 module.exports.getArticles = (req, res, next) => {
     let query = [];
+    if (req.query.search) {
+        query.push({$match:{title: {$regex: req.query.search, $options: 'i'}}});
+    }
     if (req.query.sort && req.query.direction) {
         query.push({$sort: {[req.query.sort]:parseInt(req.query.direction)}})
     }
@@ -16,14 +19,14 @@ module.exports.getArticles = (req, res, next) => {
     Article.aggregate(query)   
         .then(results => {
             return Promise.all([
-                Article.countDocuments(),
+                Article.countDocuments(req.query.search ? {title: {$regex: req.query.search, $options: 'i'}} : {}),
                 Article.populate(results, {path: "created_by"})
             ])
         })
         .then(([count, articles]) => {
             res.status(200).send({count, articles})
         })
-        .catch(err => next(err));
+        .catch(err => console.log(err));//next(err));
 }
 
 module.exports.getArticleById = (req, res, next) => {

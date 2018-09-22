@@ -235,6 +235,17 @@ describe('Northcoders News API', () => {
                     expect(articles[0].created_by.username).to.equal(filteredDocs[0].username);
                 });
         });
+        it('GET should return the articles matching a search term', () => {
+            return request
+                .get('/api/articles?search=shadow')
+                .expect(200)
+                .then(({body}) => {
+                    const {articles, count} = body;
+                    const filteredDocs = articleDocs.filter(article => article.title.indexOf('shadow') > -1);
+                    expect(articles.length).to.equal(filteredDocs.length);
+                    expect(articles[0]._id).to.equal(`${filteredDocs[0]._id}`);
+                }) 
+        });        
         it('GET should return the first article when paged with pageSize 1 and page 1', () => {
             return request
                 .get('/api/articles?page=1&pageSize=1')
