@@ -83,7 +83,33 @@ describe('Northcoders News API', () => {
                     expect(articles.length).to.equal(1);
                     expect(articles[0]._id).to.equal(`${filteredDocs[filteredDocs.length - 1]._id}`);
                 }) 
-        });        
+        });  
+        it('GET should return the documents filtered by topic and sorted by created_at date asc (oldest)', () => {
+            return request
+                .get(`/api/topics/${topicDocs[0].slug}/articles?sort=created_at&direction=1`)
+                .expect(200)
+                .then(({body}) => {
+                    const {articles, count} = body;
+                    const filteredDocs = articleDocs.filter(article => article.belongs_to === topicDocs[0].slug);
+                    expect(body).to.have.all.keys(['articles', 'count']);
+                    expect(articles.length).to.equal(filteredDocs.length);
+                    expect(count).to.equal(filteredDocs.length);
+                    expect(articles[0]._id).to.equal(`${filteredDocs[0]._id}`);
+                }) 
+        });  
+        it('GET should return the documents filtered by topic sorted by created_at date desc (newest)', () => {
+            return request
+                .get(`/api/topics/${topicDocs[0].slug}/articles?sort=created_at&direction=-1`)
+                .expect(200)
+                .then(({body}) => {
+                    const {articles, count} = body;
+                    const filteredDocs = articleDocs.filter(article => article.belongs_to === topicDocs[0].slug);
+                    expect(body).to.have.all.keys(['articles', 'count']);
+                    expect(articles.length).to.equal(filteredDocs.length);
+                    expect(count).to.equal(filteredDocs.length);
+                    expect(articles[0]._id).to.equal(`${filteredDocs[filteredDocs.length - 1]._id}`);
+                }) 
+        });                
         it ('GET should respond with a status code 404 when passed a topic slug that does not exist', () => {
             return request
                 .get('/api/topics/i-do-not-exist/articles')
@@ -228,6 +254,28 @@ describe('Northcoders News API', () => {
                     const {articles, count} = body;
                     expect(count).to.equal(articleDocs.length);
                     expect(articles.length).to.equal(1);
+                    expect(articles[0]._id).to.equal(`${articleDocs[articleDocs.length - 1]._id}`);
+                }) 
+        });
+        it('GET should return the documents sorted by created_at date asc (oldest)', () => {
+            return request
+                .get('/api/articles?sort=created_at&direction=1')
+                .expect(200)
+                .then(({body}) => {
+                    const {articles, count} = body;
+                    expect(count).to.equal(articleDocs.length);
+                    expect(articles.length).to.equal(articleDocs.length);
+                    expect(articles[0]._id).to.equal(`${articleDocs[0]._id}`);
+                }) 
+        });
+        it('GET should return the documents sorted by created_at date desc (newest)', () => {
+            return request
+                .get('/api/articles?sort=created_at&direction=-1')
+                .expect(200)
+                .then(({body}) => {
+                    const {articles, count} = body;
+                    expect(count).to.equal(articleDocs.length);
+                    expect(articles.length).to.equal(articleDocs.length);
                     expect(articles[0]._id).to.equal(`${articleDocs[articleDocs.length - 1]._id}`);
                 }) 
         });

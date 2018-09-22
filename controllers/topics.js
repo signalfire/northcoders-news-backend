@@ -13,11 +13,14 @@ module.exports.getArticlesForTopic = (req, res, next) => {
         .then(topic => {
             if (!topic) return Promise.reject({msg: 'Page Not Found', status: 404})
             let query = [];
+            query.push({$match: {belongs_to: topic.slug}});
+            if (req.query.sort && req.query.direction) {
+                query.push({$sort: {[req.query.sort]:parseInt(req.query.direction)}})
+            }
             if (req.query.page && req.query.pageSize) {
                 query.push({$skip: (req.query.page - 1) * req.query.pageSize})
                 query.push({$limit: parseInt(req.query.pageSize)});
             }            
-            query.push({$match: {belongs_to: topic.slug}});
             query.push({$lookup: { from:"comments", let: {"id": "$_id"}, pipeline:[{$match:{$expr:{$eq:["$$id","$belongs_to"]}}},{ $count: "count" }],as:"comments"}});
             query.push({$addFields: {"comment_count": { $sum: "$comments.count" }}});
             query.push({$project:{"comments":false}});

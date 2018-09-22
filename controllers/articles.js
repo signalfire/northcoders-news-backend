@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 
 module.exports.getArticles = (req, res, next) => {
     let query = [];
+    if (req.query.sort && req.query.direction) {
+        query.push({$sort: {[req.query.sort]:parseInt(req.query.direction)}})
+    }
     if (req.query.page && req.query.pageSize) {
         query.push({$skip: (req.query.page - 1) * req.query.pageSize})
         query.push({$limit: parseInt(req.query.pageSize)});
