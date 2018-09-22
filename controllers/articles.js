@@ -2,18 +2,25 @@ const {Article, Topic, User, Comment} = require('../models');
 const mongoose = require('mongoose');
 
 module.exports.getArticles = (req, res, next) => {
-    Article.aggregate([
-        {$lookup: { from:"comments", let: {"id": "$_id"}, pipeline:[{$match:{$expr:{$eq:["$$id","$belongs_to"]}}},{ $count: "count" }],as:"comments"}},
-        {$addFields: {"comment_count": { $sum: "$comments.count" }}},
-        {$project:{"comments":false}}    
-    ])    
-    .then((results) => {
-        return Article.populate(results, {path: "created_by"});
-    })
-    .then(articles => {
-        res.status(200).send({articles})
-    })
-    .catch(err => next(err));
+    let query = [];
+    if (req.query.page && req.query.pageSize) {
+        query.push({$skip: (req.query.page - 1) * req.query.pageSize})
+        query.push({$limit: parseInt(req.query.pageSize)});
+    }    
+    query.push({$lookup: { from:"comments", let: {"id": "$_id"}, pipeline:[{$match:{$expr:{$eq:["$$id","$belongs_to"]}}},{ $count: "count" }],as:"comments"}});
+    query.push({$addFields: {"comment_count": { $sum: "$comments.count" }}});
+    query.push({$project:{"comments":false}});
+    Article.aggregate(query)   
+        .then(results => {
+            return Promise.all([
+                Article.countDocuments(),
+                Article.populate(results, {path: "created_by"})
+            ])
+        })
+        .then(([count, articles]) => {
+            res.status(200).send({count, articles})
+        })
+        .catch(err => next(err));
 }
 
 module.exports.getArticleById = (req, res, next) => {
@@ -67,7 +74,6 @@ module.exports.addArticle = (req, res, next) => {
             return Topic.findOne({slug: belongs_to});
         })
         .then(topic => {
-            // TODO - Need to add something to add comment_count on the article, but it eludes me atm...
             if (!topic) return Promise.reject({msg: 'Bad Request', status: 400});
             return Article.create({...req.body, belongs_to});
         })

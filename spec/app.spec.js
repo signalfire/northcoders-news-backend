@@ -48,15 +48,42 @@ describe('Northcoders News API', () => {
                 .get(`/api/topics/${topicDocs[0].slug}/articles`)
                 .expect(200)
                 .then(({body}) => {
-                    const {articles} = body;
+                    const {articles, count} = body;
                     const filteredDocs = articleDocs.filter(article => article.belongs_to === topicDocs[0].slug);
-                    expect(body).to.have.all.keys('articles');
+                    expect(body).to.have.all.keys(['articles', 'count']);
                     expect(articles).to.be.an('array');
+                    expect(count).to.equal(filteredDocs.length);
                     expect(articles.length).to.equal(filteredDocs.length);
                     expect(articles[0]).to.be.an('object');
                     expect(articles[0].title).to.equal(filteredDocs[0].title);
                 })
         });
+        it('GET should return the first article when paged with pageSize 1 and page 1', () => {
+            return request
+                .get(`/api/topics/${topicDocs[0].slug}/articles?page=1&pageSize=1`)
+                .expect(200)
+                .then(({body}) => {
+                    const {articles, count} = body;
+                    const filteredDocs = articleDocs.filter(article => article.belongs_to === topicDocs[0].slug);
+                    expect(body).to.have.all.keys(['articles', 'count']);
+                    expect(count).to.equal(filteredDocs.length);
+                    expect(articles.length).to.equal(1);
+                    expect(articles[0]._id).to.equal(`${filteredDocs[0]._id}`);
+                }) 
+        });    
+        it('GET should return the last article when paged with pageSize 1 and page 2 (last page)', () => {
+            return request
+                .get(`/api/topics/${topicDocs[0].slug}/articles?page=2&pageSize=1`)
+                .expect(200)
+                .then(({body}) => {
+                    const {articles, count} = body;
+                    const filteredDocs = articleDocs.filter(article => article.belongs_to === topicDocs[0].slug);
+                    expect(body).to.have.all.keys(['articles', 'count']);
+                    expect(count).to.equal(filteredDocs.length);
+                    expect(articles.length).to.equal(1);
+                    expect(articles[0]._id).to.equal(`${filteredDocs[filteredDocs.length - 1]._id}`);
+                }) 
+        });        
         it ('GET should respond with a status code 404 when passed a topic slug that does not exist', () => {
             return request
                 .get('/api/topics/i-do-not-exist/articles')
@@ -171,15 +198,38 @@ describe('Northcoders News API', () => {
                 .get('/api/articles')
                 .expect(200)
                 .then(({body}) => {
-                    const {articles} = body;
+                    const {articles, count} = body;
                     const filteredDocs = userDocs.filter(user => user._id === articleDocs[0].created_by);
-                    expect(body).to.have.all.keys('articles');
+                    expect(body).to.have.all.keys(['articles', 'count']);
+                    expect(count).to.equal(articleDocs.length);
                     expect(articles).to.be.an('array');
                     expect(articles.length).to.equal(articleDocs.length);
                     expect(articles[0].title).to.equal(articleDocs[0].title);
                     expect(articles[0].created_by).to.be.an('object');
                     expect(articles[0].created_by.username).to.equal(filteredDocs[0].username);
                 });
+        });
+        it('GET should return the first article when paged with pageSize 1 and page 1', () => {
+            return request
+                .get('/api/articles?page=1&pageSize=1')
+                .expect(200)
+                .then(({body}) => {
+                    const {articles, count} = body;
+                    expect(count).to.equal(articleDocs.length);
+                    expect(articles.length).to.equal(1);
+                    expect(articles[0]._id).to.equal(`${articleDocs[0]._id}`);
+                }) 
+        });
+        it('GET should return the last article when paged with pageSize 1 and page 4', () => {
+            return request
+                .get('/api/articles?page=4&pageSize=1')
+                .expect(200)
+                .then(({body}) => {
+                    const {articles, count} = body;
+                    expect(count).to.equal(articleDocs.length);
+                    expect(articles.length).to.equal(1);
+                    expect(articles[0]._id).to.equal(`${articleDocs[articleDocs.length - 1]._id}`);
+                }) 
         });
     });
 
