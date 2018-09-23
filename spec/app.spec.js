@@ -691,4 +691,25 @@ describe('Northcoders News API', () => {
                 });                
         });            
     });
+    describe('/api/stats', () => {
+        it('Should return comment and article counts per user', () => {
+            return request
+                .get('/api/stats')
+                .expect(200)
+                .then(({body}) => {
+                    const {comments, articles} = body;
+                    expect(comments).to.be.an('array');
+                    expect(articles).to.be.an('array');
+                    userDocs.forEach(user => {
+                        const filteredComments = commentDocs.filter(comment => comment.created_by === user._id)
+                        const filteredArticles = articleDocs.filter(article => article.created_by === user._id)
+                        const userInComments = comments.filter(comment => `${comment._id}` === `${user._id}`);
+                        const userInArticles = articles.filter(article => `${article._id}` === `${user._id}`);
+                        expect(userInComments[0].comment_count).to.equal(filteredComments.length);
+                        expect(userInArticles[0].article_count).to.equal(filteredArticles.length);
+                    })
+                })
+        })
+    })
+
 });
