@@ -6,7 +6,7 @@ The api documentation is available at https://northcoders-news-rgc.herokuapp.com
 
 ## Getting Started
 
-Clone the project at https://github.com/signalfire/BE2-northcoders-news to your local machine using the git
+Clone the project at https://github.com/signalfire/northcoders-news-backend to your local machine using the git
 command *git clone <url>*
 
 ### Prerequisites
