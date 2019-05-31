@@ -1,8 +1,6 @@
 # Northcoders News
 
 Northcoders News project completed as block review at end of backend modules
-The demo site is available at https://northcoders-news-rgc.herokuapp.com
-The api documentation is available at https://northcoders-news-rgc.herokuapp.com/api
 
 ## Getting Started
 
