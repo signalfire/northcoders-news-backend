@@ -1,6 +1,6 @@
 # Northcoders News
 
-Northcoders News project completed as block review at end of backend modules
+Northcoders News project completed as block review at end of backend modules. The frontend of this project can be seen at https://northcoders-news-rgcfe.herokuapp.com/
 
 ## Getting Started
 
